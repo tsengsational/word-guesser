@@ -1,0 +1,59 @@
+@mixin tablet {
+    @media screen and ( min-width: 768px ) {
+        @content;
+    }
+}
+
+@mixin mobile {
+    @media screen and ( max-width: 767px ) {
+        @content;
+    }
+}
+
+@mixin desktop {
+    @media screen and ( min-width: 1025px ) {
+        @content;
+    }
+}
+
+$blue: #1956FF;
+$pink: #ff2357;
+$blue-to-pink: linear-gradient(to right, $blue, $pink);
+$black3: #333;
+$white: #FFF;
+$grayF9: #F9F9F9;
+$grayE1: #e1e1e1;
+$gray5: #555;
+$gray6: #666;
+$gray8: #888;
+$orange: #ffe0e0;
+$orange-dark: #fd5d39;
+
+@mixin title-font {
+    font-family: 'Lobster', cursive;
+}
+
+@mixin body-font {
+    font-family: 'Lato', sans-serif;
+}
+
+@mixin button {
+    border-radius: 5px;
+    color: $blue;
+    background-color: $white;
+    border: 1px solid $blue;
+    cursor: pointer;
+    transition: color .3s, background-color .3s, border .3s;
+    text-transform: uppercase;
+
+    &:hover {
+        color: $white;
+        background-color: $blue;
+    }
+
+    &:disabled {
+        background-color: $gray8;
+        color: $white;
+        border: 1px solid $gray8;
+    }
+}
