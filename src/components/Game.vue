@@ -71,17 +71,35 @@ export default {
             'setProperty'
         ]),
         getWord() {
+            // const headers = new Headers({
+            // "X-Mashape-Key": "vrYXh8KRj2mshS9epaur1Oc3K289p1qC01NjsnnzskjPVnRhmX",
+            // "Accept": "application/json"
+            // })
+
+            // return fetch('https://wordsapiv1.p.mashape.com/words/?random=true', {headers: headers})
+            //     .then(resp => resp.json())
+            //     .then(json => {
+            //         const word = json.word
+            //         return word
+            //     })
+            const origin = window.location.protocol + '//' + window.location.host;
+
             const headers = new Headers({
-            "X-Mashape-Key": "vrYXh8KRj2mshS9epaur1Oc3K289p1qC01NjsnnzskjPVnRhmX",
-            "Accept": "application/json"
+                origin: origin
             })
 
-            return fetch('https://wordsapiv1.p.mashape.com/words/?random=true', {headers: headers})
-                .then(resp => resp.json())
-                .then(json => {
-                    const word = json.word
+            return fetch('https://cors-anywhere.herokuapp.com/http://app.linkedin-reach.io/words', {headers: headers})
+                .then(resp => {
+                    return resp.text()
+                    })
+                .then(text => {
+                    let string = new String(text)
+                    let lib = string.split('\n')
+                    let ceiling = lib.length
+                    let rand = Math.floor( Math.random() * ceiling )
+                    let word = lib[rand]
                     return word
-                })
+                    })
         },
         guess( letter ) {
             this.guesses.push(letter)
