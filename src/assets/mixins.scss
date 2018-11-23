@@ -37,6 +37,23 @@ $orange-dark: #fd5d39;
     font-family: 'Lato', sans-serif;
 }
 
+@mixin logo {
+    transform: rotate(-5deg);
+    stroke: 2px $white;
+    text-shadow: -5px -1px 0 $white, 5px -1px 0 $white, -5px 1px 0 $white, 5px 1px 0 $white;
+}
+
+@mixin logo-before-after {
+    width: 150px;
+    height: 1px;
+    background-color: $black3;
+    content: "";
+    display: block;
+    margin-left: calc( 50% - 150px/2 );
+    position: relative;
+    z-index: -1;
+}
+
 @mixin button {
     border-radius: 5px;
     color: $blue;
@@ -55,5 +72,36 @@ $orange-dark: #fd5d39;
         background-color: $gray8;
         color: $white;
         border: 1px solid $gray8;
+    }
+}
+
+@mixin select {
+    position: relative;
+
+    &__arrow {
+        position: absolute;
+        top: 5px;
+        right: 15px;
+        z-index: 0;
+    }
+
+    &__select {
+        appearance: none;
+        background-color: transparent;
+        border: 2px solid #000;
+        font-size: 16px;
+        font-weight: 600;
+        padding-left: 15px;
+        cursor: pointer;
+        height: 34px;
+        margin-bottom: .75rem;
+        width: 100%;
+        user-select: none;
+        z-index: 3;
+        -ms-user-select: none;
+        -moz-user-select: none;
+        -moz-appearance: none;
+        -webkit-user-select: none;
+        -webkit-appearance: none;
     }
 }

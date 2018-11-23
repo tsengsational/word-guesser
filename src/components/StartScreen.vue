@@ -4,6 +4,18 @@
             Word Guesser
         </h1>
 
+        <div class="difficulty">
+            <span class="difficulty__arrow">
+                <svg xmlns="http://www.w3.org/2000/svg" width="8.573" height="5.287" viewBox="0 0 8.573 5.287"><path fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M7.573 1L4.286 4.287 1 1"/></svg>
+            </span>
+            <select class="difficulty__select" name="difficulty" id="difficulty" @change="changeDifficulty">
+                <option value="" selected disabled>Select Difficulty</option>
+                <option value="1">Easy</option>
+                <option value="5">Medium</option>
+                <option value="10">Hard</option>
+            </select>
+        </div>
+
         <button class="start-button" @click="start" >
             Play
         </button>
@@ -12,14 +24,27 @@
 </template>
 
 <script>
+import { mapMutations } from 'vuex';
+
 export default {
     name: "StartScreen",
+    data() {
+        return {
+
+        }
+    },
     methods: {
+        ...mapMutations(['setProperty']),
         start() {
             let route = {
                 name: "session"
             }
             this.$router.push(route)
+        },
+        changeDifficulty(event) {
+            let difficulty = event.target.value;
+            console.log(difficulty)
+            this.setProperty(['difficulty', difficulty]);
         }
     }
 }
@@ -47,10 +72,9 @@ export default {
 
     h1 {
         @include title-font;
-        transform: rotate(-5deg);
+        @include logo;
         font-size: 30px;
-        stroke: 2px $white;
-        text-shadow: -5px -1px 0 $white, 5px -1px 0 $white, -5px 1px 0 $white, 5px 1px 0 $white;
+
 
         @include tablet {
             font-size: 40px;
@@ -62,14 +86,7 @@ export default {
         }
 
         &::after, &::before {
-            width: 150px;
-            height: 1px;
-            background-color: $black3;
-            content: "";
-            display: block;
-            margin-left: calc( 50% - 150px/2 );
-            position: relative;
-            z-index: -1;
+            @include logo-before-after;
 
             @include tablet {
                 width: 200px;
@@ -97,6 +114,12 @@ export default {
                 top: 20px;
             }
         }
+    }
+
+    .difficulty {
+        @include select;
+        width: 200px;
+        margin: 0 calc( 50% - 100px) 20px;
     }
 
     .start-button {

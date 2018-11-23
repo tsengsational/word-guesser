@@ -6,7 +6,8 @@ Vue.use(Vuex)
 export default new Vuex.Store({
   state: {
     secretWord: "",
-    score: 0
+    score: 0,
+    difficulty: 1
   },
   mutations: {
     setProperty(state, payload) {

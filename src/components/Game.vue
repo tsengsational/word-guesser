@@ -18,6 +18,15 @@
         <div class="alphabet">
             <button class="letter-btn" v-for="(letter, key) in alphaArray" :key="key" :disabled="guessed(letter)" :value="letter" @click="guess(letter)" >{{letter}}</button>
         </div>
+        <transition name="fade" >
+            <div class="end" v-if="gameOver">
+                <div class="end__container">
+                    <h1 class="end__title" >{{endTitle}}</h1>
+                    <p class="end__subtitle">You {{endCondition}}</p>
+                    <button class="end__button" @click="$router.go(-1)">Play Again?</button>
+                </div>
+            </div>
+        </transition>
     </div>
 </template>
 
@@ -35,7 +44,8 @@ export default {
     },
     computed: {
         ...mapState([
-            'secretWord'
+            'secretWord',
+            'difficulty'
             ]),
         alphaArray() {
             return this.alphabet.split('');
@@ -56,10 +66,30 @@ export default {
         },
         badNum() {
             return this.badGuesses.length
+        },
+        lose() {
+            return this.badGuesses.length === 6 ? true : false; 
+        },
+        win() {
+            return this.guesses.length - this.badGuesses.length === this.letters.length ? true : false;
+        },
+        gameOver() {
+            if ( this.lose || this.win ) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        endTitle() {
+            return this.win ? "Congratulations!" : "Sorry"
+        },
+        endCondition() {
+            return this.win ? "Won" : "Lost"
         }
     },
     async created() {
-        let word = await this.getWord();
+        const difficulty = this.difficulty
+        let word = await this.getWord(difficulty);
         while ( word.includes(" ") || word.includes("-") ) {
             word = await this.getWord();
         }
@@ -70,25 +100,16 @@ export default {
         ...mapMutations([
             'setProperty'
         ]),
-        getWord() {
-            // const headers = new Headers({
-            // "X-Mashape-Key": "vrYXh8KRj2mshS9epaur1Oc3K289p1qC01NjsnnzskjPVnRhmX",
-            // "Accept": "application/json"
-            // })
-
-            // return fetch('https://wordsapiv1.p.mashape.com/words/?random=true', {headers: headers})
-            //     .then(resp => resp.json())
-            //     .then(json => {
-            //         const word = json.word
-            //         return word
-            //     })
+        getWord( difficulty ) {
             const origin = window.location.protocol + '//' + window.location.host;
+
+            const diffQuery = `?difficulty=${difficulty}`
 
             const headers = new Headers({
                 origin: origin
             })
 
-            return fetch('https://cors-anywhere.herokuapp.com/http://app.linkedin-reach.io/words', {headers: headers})
+            return fetch(`https://cors-anywhere.herokuapp.com/http://app.linkedin-reach.io/words${diffQuery}`, {headers: headers})
                 .then(resp => {
                     return resp.text()
                     })
@@ -137,11 +158,11 @@ export default {
         grid-column-end: content-end;
     }
 
-    .spaces, .guesses {
+    .spaces {
 
         @include desktop {
             grid-column-start: left;
-            grid-column-end: right;
+            grid-column-end: content-end;
         }
     }
 
@@ -197,6 +218,11 @@ export default {
 
     .guesses {
         padding: 0 20px;
+
+        @include desktop {
+            grid-column-start: left;
+            grid-column-end: right;
+        }
         
         h2 {
             @include title-font;
@@ -213,6 +239,7 @@ export default {
             flex-wrap: wrap;
             justify-content: flex-start;
             margin-bottom: 20px;
+            min-height: 40px;
 
             .strike {
                 color: $pink;
@@ -267,6 +294,60 @@ export default {
 
     .alphabet {
         text-align: center;
+    }
+
+    .end {
+        &__container {
+            position: fixed;
+            width: calc( 100vw - 40px);
+            padding: 50px 0;
+            top: 50px;
+            left: 20px;
+            text-align: center;
+            z-index: 3;
+            background-color: $white;
+        }
+
+        &__title {
+            @include title-font;
+            @include logo;
+            font-size: 40px;
+            line-height: 36px;
+
+            &::before, &::after {
+                @include logo-before-after;
+            }
+
+            &::before {
+                top: 10px;
+            }
+        }
+
+        &__subtitle {
+            @include body-font;
+            font-size: 22px;
+            line-height: 26px;
+        }
+
+        &__button {
+            @include button;
+            width: 150px;
+            height: 40px;
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: 900;
+        }
+
+        &::after {
+            content: "";
+            width: 100vw;
+            height: 100vh;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 2;
+            background: $blue-to-pink;
+        }
     }
 }
 </style>
