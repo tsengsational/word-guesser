@@ -1,5 +1,5 @@
 <template>
-    <div class="game">
+    <div class="game" v-if="!loading">
         <div class="spaces" >
             <span class="space" v-for="(space, key) in letters" :key="key" >
                 <span :class="{show: guessed(space)}">{{space}}</span>
@@ -19,10 +19,11 @@
             <button class="letter-btn" v-for="(letter, key) in alphaArray" :key="key" :disabled="guessed(letter)" :value="letter" @click="guess(letter)" >{{letter}}</button>
         </div>
         <transition name="fade" >
-            <div class="end" v-if="gameOver">
+            <div class="end" v-if="gameOver" :class="{show: gameOver}">
                 <div class="end__container">
                     <h1 class="end__title" >{{endTitle}}</h1>
                     <p class="end__subtitle">You {{endCondition}}</p>
+                    <h2 class="end__word">{{this.secretWord}}</h2>
                     <button class="end__button" @click="$router.go(-1)">Play Again?</button>
                 </div>
             </div>
@@ -39,7 +40,8 @@ export default {
         return {
             words: [],
             guesses: [],
-            alphabet: "abcdefghijklmnopqrstuvwxyz"
+            alphabet: "abcdefghijklmnopqrstuvwxyz",
+            loading: true
         }
     },
     computed: {
@@ -101,6 +103,7 @@ export default {
             'setProperty'
         ]),
         getWord( difficulty ) {
+            this.loading = true;
             const origin = window.location.protocol + '//' + window.location.host;
 
             const diffQuery = `?difficulty=${difficulty}`
@@ -111,14 +114,15 @@ export default {
 
             return fetch(`https://cors-anywhere.herokuapp.com/http://app.linkedin-reach.io/words${diffQuery}`, {headers: headers})
                 .then(resp => {
-                    return resp.text()
+                    return resp.text();
                     })
                 .then(text => {
-                    let string = new String(text)
-                    let lib = string.split('\n')
-                    let ceiling = lib.length
-                    let rand = Math.floor( Math.random() * ceiling )
-                    let word = lib[rand]
+                    let string = new String(text);
+                    let lib = string.split('\n');
+                    let ceiling = lib.length;
+                    let rand = Math.floor( Math.random() * ceiling );
+                    let word = lib[rand];
+                    this.loading = false;
                     return word
                     })
         },
@@ -297,6 +301,12 @@ export default {
     }
 
     .end {
+        display: none;
+
+        &.show {
+            display: block;
+        } 
+
         &__container {
             position: fixed;
             width: calc( 100vw - 40px);
@@ -327,6 +337,10 @@ export default {
             @include body-font;
             font-size: 22px;
             line-height: 26px;
+        }
+
+        &__word {
+            text-transform: uppercase;
         }
 
         &__button {

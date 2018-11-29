@@ -88,7 +88,9 @@ $orange-dark: #fd5d39;
     &__select {
         appearance: none;
         background-color: transparent;
-        border: 2px solid #000;
+        border-width: 2px;
+        border-image-slice: 1;
+        border-image-source: $blue-to-pink;
         font-size: 16px;
         font-weight: 600;
         padding-left: 15px;

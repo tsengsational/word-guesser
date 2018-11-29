@@ -14,9 +14,13 @@
                 <option value="5">Medium</option>
                 <option value="10">Hard</option>
             </select>
+            <label for="name">
+            Name
+            <input class="name" v-model="name" id="name" type="text">
+            </label>
         </div>
 
-        <button class="start-button" @click="start" >
+        <button class="start-button" :disabled="!playReady" @click="start" >
             Play
         </button>
     </div>
@@ -24,7 +28,7 @@
 </template>
 
 <script>
-import { mapMutations } from 'vuex';
+import { mapMutations, mapState } from 'vuex';
 
 export default {
     name: "StartScreen",
@@ -33,9 +37,25 @@ export default {
 
         }
     },
+    computed: {
+        playReady() {
+            return this.name.length > 0 ? true : false;
+        },
+        name: {
+            get() {
+                return this.$store.state.name;
+            },
+            set(value) {
+                this.setProperty(['name', value])
+            }
+        }
+    },
     methods: {
-        ...mapMutations(['setProperty']),
+        ...mapMutations([
+            'setProperty'
+            ]),
         start() {
+            this.setProperty(['name', this.name])
             let route = {
                 name: "session"
             }
@@ -43,7 +63,6 @@ export default {
         },
         changeDifficulty(event) {
             let difficulty = event.target.value;
-            console.log(difficulty)
             this.setProperty(['difficulty', difficulty]);
         }
     }
