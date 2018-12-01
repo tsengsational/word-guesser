@@ -4,6 +4,29 @@
             <span class="space" v-for="(space, key) in letters" :key="key" >
                 <span :class="{show: guessed(space)}">{{space}}</span>
             </span>
+            <div class="hint-tooltip-button tooltip-button" :class="{show: showHint}" @click="toggleHint">
+                <i class="icon ion ion-md-help-circle"></i>
+                <div class="hint-tooltip tooltip">
+                    Get Hint:
+                    <button class="button syll-btn" @click.prevent.stop="handleSyllable" :disabled="disableSyllables">Syllables (1pt)</button>
+                    <button class="button def-btn" @click.prevent.stop="handleDefinition" :disabled="disableDefinition">Definition (2pts)</button>
+                    <div class="tooltip-bank">
+                        Available Hint Points: {{bank}}
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="hint">
+            <div class="definitions" v-if="displayDefs.length > 0">
+                <h3>Definitions:</h3>
+                <ul>
+                    <li v-for="(definition, key) in displayDefs" :key="key">{{definition}}</li>
+                </ul>
+            </div>
+            <div class="syllables" v-if="hintObj.syllable">
+                <h3>Syllables:</h3>
+                {{syllables.count}}
+            </div>
         </div>
         <div class="guesses">
             <h2>Guesses:</h2>
@@ -41,19 +64,32 @@ export default {
             words: [],
             guesses: [],
             alphabet: "abcdefghijklmnopqrstuvwxyz",
-            loading: true
+            loading: true,
+            showHint: false,
+            hintObj: {
+                syllable: false,
+                definitions: false
+            },
+            displayDefs: []
         }
     },
     computed: {
         ...mapState([
             'secretWord',
-            'difficulty'
+            'difficulty',
+            'hints',
+            'bank'
             ]),
         alphaArray() {
             return this.alphabet.split('');
         },
         letters() {
             return this.secretWord.split('');
+        },
+        totalLetters() {
+            let total = {}
+            this.letters.forEach( letter => total[letter] ? total[letter]++ : total[letter] = 1 )
+            return Object.keys(total).length;
         },
         lettersCodex() {
             let codex = {}
@@ -73,7 +109,7 @@ export default {
             return this.badGuesses.length === 6 ? true : false; 
         },
         win() {
-            return this.guesses.length - this.badGuesses.length === this.letters.length ? true : false;
+            return this.guesses.length - this.badGuesses.length === this.totalLetters ? true : false;
         },
         gameOver() {
             if ( this.lose || this.win ) {
@@ -87,6 +123,40 @@ export default {
         },
         endCondition() {
             return this.win ? "Won" : "Lost"
+        },
+        syllables() {
+            return this.hints.syllables ? this.hints.syllables : "None"
+        },
+        definitions() {
+            if ( this.hints && this.hints.hasOwnProperty("results") && this.hints.results.length > 0 ){
+                const results = this.hints.results;
+                const definitions = results.map( result => result.definition );
+                return definitions
+            } else {
+                return []
+            }
+        },
+        disableSyllables() {
+            if ( this.hintObj.syllable || this.bank == 0 ) {
+                return true;
+            } else {
+                return false;
+            }
+        },
+        disableDefinition() {
+            if ( this.hintObj.definitions || this.bank < 2 || this.definitions.length === 0 ) {
+                return true;
+            } else {
+                return false;
+            }
+        }
+    },
+    watch: {
+        win( val ) {
+            if ( val === true ) {
+                const score = 6 - this.badNum;
+                this.addToBank( score );
+            }
         }
     },
     async created() {
@@ -95,12 +165,13 @@ export default {
         while ( word.includes(" ") || word.includes("-") ) {
             word = await this.getWord();
         }
+        const hints = await this.getHints(word);
         this.setProperty(["secretWord", word]);
-
+        this.setProperty(["hints"], hints);
     },
     methods: {
         ...mapMutations([
-            'setProperty'
+            'setProperty', 'addToBank', 'decrementBank'
         ]),
         getWord( difficulty ) {
             this.loading = true;
@@ -134,6 +205,37 @@ export default {
         },
         isBadGuess( letter ) {
             return this.badGuesses.includes( letter ) ? true : false;
+        },
+        toggleHint() {
+            this.showHint = !this.showHint;
+        },
+        getHints(word) {
+            const headers = new Headers({
+            "X-Mashape-Key": "vrYXh8KRj2mshS9epaur1Oc3K289p1qC01NjsnnzskjPVnRhmX",
+            "Accept": "application/json"
+            })
+            const searchUrl = 'https://wordsapiv1.p.mashape.com/words/' + word
+
+            fetch(searchUrl, {headers: headers})
+                .then(resp => resp.json())
+                .then(json => {
+                    const word = json
+                    this.setProperty(["hints", word])
+                })
+        },
+        handleSyllable() {
+            if ( this.bank >= 1 ) {
+                this.decrementBank( 1 )
+                this.hintObj.syllable = true
+            }
+        },
+        handleDefinition() {
+
+            if ( this.bank >= 2 && this.definitions.length > 0 ) {
+                this.decrementBank( 2 )
+                let definition = this.definitions.shift();
+                this.displayDefs.push( definition );
+            }
         }
     }    
 }
@@ -218,6 +320,30 @@ export default {
                 }
             }
         }
+    }
+
+    .hint {
+        grid-column: content / content-end;
+        text-align: center;
+        
+        h3 {
+            display: inline-block;
+            margin: 0;
+        }
+
+        @include desktop {
+            grid-column: left / content-end;
+        }
+    }
+
+    .button {
+        padding: 2px 6px;
+        display: block;
+        margin: 5px auto;
+    }
+    
+    .hint-tooltip {
+        text-align: center;
     }
 
     .guesses {

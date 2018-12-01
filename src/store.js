@@ -13,6 +13,8 @@ export default new Vuex.Store({
     difficulty: 1,
     name: "",
     bank: 3,
+    menuOpen: false,
+    hints: {}
   },
   mutations: {
     setProperty(state, payload) {
@@ -20,6 +22,12 @@ export default new Vuex.Store({
     },
     addToBank(state, payload) {
       state.bank += payload
+    },
+    decrementBank(state, payload) {
+      state.bank -= payload
+    },
+    toggleMenu(state) {
+      state.menuOpen = !state.menuOpen;
     }
   },
   actions: {
