@@ -1,5 +1,5 @@
 <template>
-    <div class="statistics" :class="{show: menuOpen}">
+    <div class="statistics" :class="{show: menuOpen}" v-if="!loading">
            <div class="player-name">
                <h3>Player:</h3> {{this.name}}
            </div>
@@ -23,7 +23,7 @@ import { mapState, mapMutations } from 'vuex';
 
 export default {
     computed: {
-        ...mapState(["name", "difficulty", "score", "bank", "menuOpen"]),
+        ...mapState(["name", "difficulty", "score", "bank", "menuOpen", "loading"]),
         diffName() {
             let level = this.difficulty;
             switch ( level ) {

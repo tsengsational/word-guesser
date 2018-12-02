@@ -1,5 +1,6 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
+import { Stats } from 'fs';
 
 Vue.use(Vuex)
 
@@ -14,7 +15,8 @@ export default new Vuex.Store({
     name: "",
     bank: 3,
     menuOpen: false,
-    hints: {}
+    hints: {},
+    loading: false
   },
   mutations: {
     setProperty(state, payload) {
@@ -28,6 +30,12 @@ export default new Vuex.Store({
     },
     toggleMenu(state) {
       state.menuOpen = !state.menuOpen;
+    },
+    setScore(state, scoreObj) {
+      let keys = Object.keys(scoreObj);
+      keys.forEach( key => {
+        state.score[key] += scoreObj[key]
+      })
     }
   },
   actions: {

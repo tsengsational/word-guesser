@@ -47,6 +47,7 @@
                     <h1 class="end__title" >{{endTitle}}</h1>
                     <p class="end__subtitle">You {{endCondition}}</p>
                     <h2 class="end__word">{{this.secretWord}}</h2>
+                    <p class="end__points" v-if="(6 - badNum) > 0" >You earned {{6 - badNum}} Hint Points!</p>
                     <button class="end__button" @click="$router.go(-1)">Play Again?</button>
                 </div>
             </div>
@@ -64,7 +65,6 @@ export default {
             words: [],
             guesses: [],
             alphabet: "abcdefghijklmnopqrstuvwxyz",
-            loading: true,
             showHint: false,
             hintObj: {
                 syllable: false,
@@ -78,7 +78,8 @@ export default {
             'secretWord',
             'difficulty',
             'hints',
-            'bank'
+            'bank',
+            'loading'
             ]),
         alphaArray() {
             return this.alphabet.split('');
@@ -156,6 +157,31 @@ export default {
             if ( val === true ) {
                 const score = 6 - this.badNum;
                 this.addToBank( score );
+
+                switch ( this.difficulty ) {
+                    case "1":
+                        this.setScore( { wins: 1 } );
+                        break;
+                    case "5":
+                        this.setScore( { wins: 2 } );
+                        break;
+                    case "10":
+                        this.setScore( { wins: 3 } );
+                }
+            }
+        }, 
+        lose( val ) {
+            if ( val === true ) {
+                switch ( this.difficulty ) {
+                    case "1":
+                        this.setScore( { losses: 1 } );
+                        break;
+                    case "5":
+                        this.setScore( { losses: 2 } );
+                        break;
+                    case "10":
+                        this.setScore( { losses: 3 } );
+                }
             }
         }
     },
@@ -171,10 +197,10 @@ export default {
     },
     methods: {
         ...mapMutations([
-            'setProperty', 'addToBank', 'decrementBank'
+            'setProperty', 'addToBank', 'decrementBank', 'setScore'
         ]),
         getWord( difficulty ) {
-            this.loading = true;
+            this.setProperty( [ "loading", true ] );
             const origin = window.location.protocol + '//' + window.location.host;
 
             const diffQuery = `?difficulty=${difficulty}`
@@ -193,7 +219,7 @@ export default {
                     let ceiling = lib.length;
                     let rand = Math.floor( Math.random() * ceiling );
                     let word = lib[rand];
-                    this.loading = false;
+                    this.setProperty( [ "loading", false ] );
                     return word
                     })
         },

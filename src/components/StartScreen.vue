@@ -9,15 +9,15 @@
                 <svg xmlns="http://www.w3.org/2000/svg" width="8.573" height="5.287" viewBox="0 0 8.573 5.287"><path fill="none" stroke="#000" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" stroke-miterlimit="10" d="M7.573 1L4.286 4.287 1 1"/></svg>
             </span>
             <select class="difficulty__select" name="difficulty" id="difficulty" @change="changeDifficulty">
-                <option value="" selected disabled>Select Difficulty</option>
-                <option value="1">Easy</option>
-                <option value="5">Medium</option>
-                <option value="10">Hard</option>
+                <option value="" :selected="selectDisabled" disabled>Select Difficulty</option>
+                <option value="1" :selected="selectDifficulty === '1'" >Easy</option>
+                <option value="5" :selected="selectDifficulty === '5'">Medium</option>
+                <option value="10" :selected="selectDifficulty === '10'">Hard</option>
             </select>
-            <label for="name">
-            Name
-            <input class="name" v-model="name" id="name" type="text">
+            <label class="name-label" for="name">
+            Player Name
             </label>
+            <input class="name" v-model="name" id="name" type="text">
         </div>
 
         <button class="start-button" :disabled="!playReady" @click="start" >
@@ -38,6 +38,7 @@ export default {
         }
     },
     computed: {
+        ...mapState( [ "score", "difficulty" ] ),
         playReady() {
             return this.name.length > 0 ? true : false;
         },
@@ -47,6 +48,18 @@ export default {
             },
             set(value) {
                 this.setProperty(['name', value])
+            }
+        },
+        selectDisabled() {
+            let totalGames = this.score.wins + this.score.losses;
+
+            return totalGames > 0 ? false : true;
+        },
+        selectDifficulty() {
+            if ( !this.selectDisabled ) {
+                return this.difficulty;
+            } else {
+                return false;
             }
         }
     },
@@ -148,6 +161,27 @@ export default {
         line-height: 18px;
         font-weight: 900;
         @include button;
+    }
+
+    
+    .name {
+        width: 200px;
+        height: 34px;
+        padding: 2px 12px;
+        box-sizing: border-box;
+        display: block;
+        border: 2px solid $grayE1;
+        font-size: 14px;
+        line-height: 18px;
+
+        &-label {
+            width: 200px;
+            text-align: left;
+            margin-bottom: 5px;
+            display: block;
+            font-size: 12px;
+            color: $gray6;
+        }
     }
 
 }

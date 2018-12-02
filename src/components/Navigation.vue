@@ -1,5 +1,5 @@
 <template>
-    <div class="nav">
+    <div class="nav" v-if="!loading">
         <i class="ion icon ion-md-menu" @click="toggleMenu"></i>
     </div> 
 </template>
@@ -10,7 +10,7 @@ import { mapState, mapMutations } from "vuex";
 export default {
     name: "Navigation",
     computed: {
-        ...mapState(["menuOpen"])
+        ...mapState( [ "menuOpen", "loading" ] ),
     },
     methods: {
         ...mapMutations(["toggleMenu"])
