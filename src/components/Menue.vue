@@ -62,7 +62,7 @@ export default {
     justify-content: flex-end;
     width: calc(100% + 6px);
     z-index: 1;
-    transform: translate( 0, -200px );
+    transform: translate( 0, -250px );
     transition: transform .3s;
 
     &.show {

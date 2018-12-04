@@ -64,9 +64,9 @@ export default {
     background: $white;
     text-align: center;
     padding: 20px;
-    border-radius: 10px;
 
     @include tablet {
+        border-radius: 10px;
         width: 600px;
         padding:  0 50px 25px;
         margin: 0 calc( 50vw - 300px );
@@ -124,7 +124,7 @@ export default {
         width: 100%;
         border: 1px solid $grayE1;
         border-collapse: collapse;
-        // padding: 10px;
+        margin-bottom: 30px;
 
         @include tablet {
             width: 500px;
