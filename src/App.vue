@@ -20,14 +20,36 @@ body {
   width: 100vw;
   height: 100vh;
   background: $blue-to-pink;
+  background-size: 300% 300%;
   display: flex;
   align-items: center;
   justify-content: center;
+  animation: Gradient 10s ease infinite;
+  -webkit-animation: Gradient 10s ease infinite;
+  -moz-animation: Gradient 10s ease infinite;
   
   div, span {
     box-sizing: border-box;
   }
 }
+
+@keyframes Gradient {
+  0%{background-position:0% 50%}
+  50%{background-position:100% 50%}
+  100%{background-position:0% 50%}
+}
+
+@-webkit-keyframes Gradient {
+   0%{background-position:0% 50%}
+   50%{background-position:100% 50%}
+   100%{background-position:0% 50%}
+ }
+ @-moz-keyframes Gradient {
+   0%{background-position:0% 50%}
+   50%{background-position:100% 50%}
+   100%{background-position:0% 50%}
+}
+
 
 .fade-enter-active, .fade-leave-active {
   transition: opacity .5s;

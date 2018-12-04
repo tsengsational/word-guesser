@@ -1,5 +1,5 @@
 <template>
-    <div class="leaderboard">
+    <div class="leaderboard" v-if="!loading">
         <h1 class="leaderboard__title">Leaderboard</h1>
         <div class="player-container">
             <table class="leaderboard__table">
@@ -50,6 +50,11 @@ export default {
     firestore() {
         return {
             topPlayers: db.collection("players").orderBy("points", "desc").limit(10)
+        }
+    },
+    computed: {
+        loading() {
+            return this.topPlayers.length === 0 ? true : false;
         }
     }    
 }
