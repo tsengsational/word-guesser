@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import Vuex from 'vuex'
-import { Stats } from 'fs';
 
 Vue.use(Vuex)
 
@@ -9,7 +8,8 @@ export default new Vuex.Store({
     secretWord: "",
     score: {
       wins: 0,
-      losses: 0
+      losses: 0,
+      points: 0
     },
     difficulty: 1,
     name: "",

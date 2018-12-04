@@ -16,7 +16,10 @@ firebase.initializeApp({
     messagingSenderId: "1057208886291"
 })
 
+
 export const db = firebase.firestore()
+const settings = {timestampsInSnapshots: true};
+db.settings(settings);
 
 Vue.config.productionTip = false
 

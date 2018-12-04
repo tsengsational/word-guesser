@@ -23,6 +23,12 @@
         <button class="start-button" :disabled="!playReady" @click="start" >
             Play
         </button>
+        <div class="leader-container">
+            <button class="leader-btn" @click="$router.push({name: 'leaderboard'})">
+                <i class="ion icon ion-ios-medal"></i>
+            </button>
+            <h3 class="leader-caption">Leaderboard</h3>
+        </div>
     </div>
 
 </template>
@@ -87,10 +93,11 @@ export default {
 
 .start-screen {
     width: 100%;
-    padding: 20px 0 40px;
+    padding: 20px 0 60px;
     background-color: $white;
     border-radius: 5px;
     text-align: center;
+    position: relative;
 
     @include tablet {
         width: 640px;
@@ -181,6 +188,57 @@ export default {
             display: block;
             font-size: 12px;
             color: $gray6;
+        }
+    }
+
+    .leader-container {
+        position: absolute;
+        right: 10px;
+        bottom: 10px;
+
+        .leader-caption {
+            position: absolute;
+            right: 36px;
+            bottom: 5px;
+            margin-bottom: 0;
+            font-size: 14px;
+
+            @include tablet {
+                opacity: 0;
+                transform: translateX(20px);
+                transition: all .3s;
+            }
+        }
+
+        &:hover {
+            .leader-caption {
+
+                @include tablet {
+                    opacity: 1;
+                    transform: translateX(0);
+                }
+            }
+        }
+    }
+
+    .leader-btn {
+        border-radius: 50%;
+        background-color: $blue;
+        color: $white;
+        border: 1px solid $blue;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        cursor: pointer;
+
+        i {
+            &::before {
+                font-size: 15px
+            }
         }
     }
 

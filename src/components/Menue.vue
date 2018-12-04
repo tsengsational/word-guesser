@@ -12,6 +12,12 @@
            <div class="bank">
                <h3>Hint Points:</h3> {{bank}}
            </div>
+           <div class="leader-container" @click="$router.push({name: 'leaderboard'})">
+            <span class="leader-caption">Leaderboard</span>
+            <button class="leader-btn" >
+                <i class="ion icon ion-ios-medal"></i>
+            </button>
+        </div>
            <div class="menu-close">
                <button class="button" @click="toggleMenu"><i class="icon ion ion-ios-arrow-up"></i> Close</button>
            </div>
@@ -83,7 +89,7 @@ export default {
 
     
 
-    .player-name, .score, .difficulty, .bank, .menu-close {
+    .player-name, .score, .difficulty, .bank, .menu-close, .leader-container {
         padding: 10px 20px;
         font-size: 14px;
         line-height: 18px;
@@ -109,6 +115,39 @@ export default {
         }
     }
 
+    .leader-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+
+        span {
+            font-size: 14px;
+            line-height: 18px;
+            font-weight: 900;
+        }
+    }
+
+    .leader-btn {
+        border-radius: 50%;
+        background-color: $blue;
+        color: $white;
+        border: 1px solid $blue;
+        width: 28px;
+        height: 28px;
+        padding: 0;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        
+        cursor: pointer;
+
+        i {
+            &::before {
+                font-size: 15px
+            }
+        }
+    }
     
 }
 </style>

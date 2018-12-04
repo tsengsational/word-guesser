@@ -57,6 +57,7 @@
 
 <script>
 import { mapState, mapMutations } from 'vuex';
+import { db } from '../main.js';
 
 export default {
     name: "Game",
@@ -79,7 +80,9 @@ export default {
             'difficulty',
             'hints',
             'bank',
-            'loading'
+            'loading',
+            'name',
+            'score'
             ]),
         alphaArray() {
             return this.alphabet.split('');
@@ -153,6 +156,7 @@ export default {
         }
     },
     watch: {
+        // watches for win condition and increments win value based on difficulty level
         win( val ) {
             if ( val === true ) {
                 const score = 6 - this.badNum;
@@ -170,6 +174,7 @@ export default {
                 }
             }
         }, 
+        // watches for loss condition and increments loss value based on difficulty level
         lose( val ) {
             if ( val === true ) {
                 switch ( this.difficulty ) {
@@ -183,8 +188,31 @@ export default {
                         this.setScore( { losses: 3 } );
                 }
             }
+        },
+        // persists record of player by name, records wins, losses, and total points
+        gameOver( ) {
+            const name = this.name;
+            const score = this.score;
+            score.points = score.wins - score.losses;
+            
+            const docRef = db.collection("players").doc(name)
+
+            docRef.get()
+                .then( doc => {
+                    if (doc.exists) {
+                        docRef.set(score, {merge: true});
+
+                    } else {
+                        docRef.set(score);
+                    }
+                })
+                .catch( error => {
+                    console.error("doc does not exist:", error)
+                } )
         }
     },
+    // Gets word based on difficulty level and fetches hints from WordsAPI. Creates record of player if new,
+    // if player already exists, retrieves their last score.
     async created() {
         const difficulty = this.difficulty
         let word = await this.getWord(difficulty);
@@ -194,11 +222,28 @@ export default {
         const hints = await this.getHints(word);
         this.setProperty(["secretWord", word]);
         this.setProperty(["hints"], hints);
+
+        const name = this.name;
+        const docRef = db.collection("players").doc(name)
+
+        docRef.get()
+            .then( doc => {
+                if (doc.exists) {
+                    const score = doc.data()
+                    this.setProperty(['score', score])
+                } else {
+                    docRef.set( this.score, { merge: true } )
+                    .catch( error => console.error(error))
+                }
+            })
     },
     methods: {
+        // maps vuex state properties to component
         ...mapMutations([
             'setProperty', 'addToBank', 'decrementBank', 'setScore'
         ]),
+        // gets list of words via proxy server to bypass CORS error
+        // fetches list of words, creates an array and randomly selects a word from the list
         getWord( difficulty ) {
             this.setProperty( [ "loading", true ] );
             const origin = window.location.protocol + '//' + window.location.host;
